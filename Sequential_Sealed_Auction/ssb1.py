@@ -3,6 +3,8 @@ import math
 import numpy
 import random
 import strategies
+import time
+
 
 seed(12)
 
@@ -27,6 +29,7 @@ class Bidder:
             self.w[i] = (self.w[i] * (1 + (self.eta * utilities[i])))
     
     def draw(self):
+        
         choice = random.uniform(0, sum(self.w))
         choice_index = 0
 
@@ -53,8 +56,6 @@ class Bidder:
                 utilities.append(0)
             elif bid == winning_price and not is_winner:
                 utilities.append(0)
-            elif bid == winning_price and is_winner:
-                utilities.append(self.valuation - bid)
             else:
                 utilities.append(self.valuation - bid)
         #print(is_winner, utilities)
@@ -103,8 +104,8 @@ for i in range(NUM_STRATS + 1):
 
 
 # == Simulation Parameters ==
-NUM_ROUNDS = 1000
-NUM_BIDDERS = 100000
+NUM_ROUNDS = 1
+NUM_BIDDERS = 50000
 
 # == Main == 
 # alice = Bidder(NUM_ROUNDS, strat_list, 1)
@@ -117,6 +118,8 @@ total_social_welfare = 0
 optimal_social_welfare = 0
 POA_AVERAGE = 0
 
+time1 = time.clock()
+
 for i in range(NUM_ROUNDS):
     bids = []
     valuations = []
@@ -126,6 +129,7 @@ for i in range(NUM_ROUNDS):
         bids.append(bidder.get_bid())
         valuations.append(bidder.get_valuation())
 
+ 
     #Determine what bid won
     selling_price = max_list(bids)
     winning_bidders = get_winners_index(bids, selling_price)
@@ -134,6 +138,8 @@ for i in range(NUM_ROUNDS):
     #Determine what valuation should have won
     highest_valuation = max_list(valuations)
 
+    time2 = time.clock()
+
     #Update Agents on Outcome
     for j in range(len(bidders)):
         if j == final_winner:
@@ -141,15 +147,19 @@ for i in range(NUM_ROUNDS):
         else:
             bidders[j].lost(selling_price)
 
+    time3 = time.clock()
+
     #Update Social Welfare and POA values
     total_social_welfare += bidders[final_winner].get_valuation()
     optimal_social_welfare += highest_valuation
     POA = total_social_welfare/optimal_social_welfare
     POA_AVERAGE = (POA + POA_AVERAGE)/2
-
+    print(time1)
+    print(time2-time1)
+    print(time3-time2)
     if(i == 0 or i == 9 or i == 999 or i == 9999 or i == 99999):
         print('Loop', i+1,  final_winner, "POA: ", POA, "POA AVG: ", POA_AVERAGE) 
-bidders[0].print_probs()
+# bidders[0].print_probs()
 
 
 

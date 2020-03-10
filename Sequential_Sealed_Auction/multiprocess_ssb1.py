@@ -1,8 +1,10 @@
 from random import uniform, seed
+import concurrent.futures
 import math
 import numpy
 import random
 import strategies
+import time
 
 seed(12)
 
@@ -60,7 +62,6 @@ class Bidder:
         #print(is_winner, utilities)
         return utilities
      
-
     def won(self, winning_price):
         self.total_utility += (self.valuation - winning_price)
         regret_utilities = self.calculate_utilities(winning_price, True)
@@ -92,135 +93,74 @@ def get_winners_index(bids, winning_price):
             winners.append(i)
     return winners
 
+def sequential_auction(args):
+    NUM_BIDDERS = args[0]
+    NUM_ROUNDS = args[1]
+    strat_list = args[2]
+    # alice = Bidder(NUM_ROUNDS, strat_list, 1)
+    # bob = Bidder(NUM_ROUNDS, strat_list, 1)
+    bidders = []
+    for i in range(NUM_BIDDERS):
+        bidders.append(Bidder(NUM_ROUNDS, strat_list, 1))
 
+    total_social_welfare = 0
+    optimal_social_welfare = 0
+    POA_AVERAGE = 0
+
+    for i in range(NUM_ROUNDS):
+        bids = []
+        valuations = []
+        for bidder in bidders:
+            bidder.draw_valuation()
+            bids.append(bidder.get_bid())
+            valuations.append(bidder.get_valuation())
+
+        #Determine what bid won
+        selling_price = max_list(bids)
+        winning_bidders = get_winners_index(bids, selling_price)
+        final_winner = random.choice(winning_bidders)
+
+        #Determine what valuation should have won
+        highest_valuation = max_list(valuations)
+
+        #Update Agents on Outcome
+        for j in range(len(bidders)):
+            if j == final_winner:
+                bidders[j].won(selling_price)
+            else:
+                bidders[j].lost(selling_price)
+
+        #Update Social Welfare and POA values
+        total_social_welfare += bidders[final_winner].get_valuation()
+        optimal_social_welfare += highest_valuation
+        POA = total_social_welfare/optimal_social_welfare
+        if(POA_AVERAGE == 0):
+            POA_AVERAGE = POA
+        else:
+            POA_AVERAGE = (POA + POA_AVERAGE)/2
+
+        if(i == NUM_ROUNDS - 1):
+            return POA
+            
 # == Stratagy Initialization == 
 NUM_STRATS = 100
 strat_list = []
 for i in range(NUM_STRATS + 1):
     percent = i / NUM_STRATS
-    #print(percent)
     strat_list.append(strategies.Percent_V_Strategy(percent))
 
-
 # == Simulation Parameters ==
-NUM_ROUNDS = 100000
-NUM_BIDDERS = 20
-
-# == Main == 
-# alice = Bidder(NUM_ROUNDS, strat_list, 1)
-# bob = Bidder(NUM_ROUNDS, strat_list, 1)
-bidders = []
-for i in range(NUM_BIDDERS):
-    bidders.append(Bidder(NUM_ROUNDS, strat_list, 1))
-
-total_social_welfare = 0
-optimal_social_welfare = 0
-
-for i in range(NUM_ROUNDS):
-    print('Entering Loop', i)
-    bids = []
-    valuations = []
-
-    for bidder in bidders:
-        bidder.draw_valuation()
-        bids.append(bidder.get_bid())
-        valuations.append(bidder.get_valuation())
-
-    #Determine what bid won
-    selling_price = max_list(bids)
-    winning_bidders = get_winners_index(bids, selling_price)
-    final_winner = random.choice(winning_bidders)
-
-    #Determine what valuation should have won
-    highest_valuation = max_list(valuations)
-
-    #Update Agents on Outcome
-    for j in range(len(bidders)):
-        if j == final_winner:
-            bidders[j].won(selling_price)
-        else:
-            bidders[j].lost(selling_price)
-
-    #Update Social Welfare and POA values
-    total_social_welfare += bidders[final_winner].get_valuation()
-    optimal_social_welfare += highest_valuation
-    POA = total_social_welfare/optimal_social_welfare
-    print('Winner:', final_winner, "POA: ", POA) 
-bidders[0].print_probs()
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+NUM_ROUNDS = 100
+MAX_NUM_BIDDERS = 100
+NUM_SIMULATIONS = 10
+
+# == Main ==
+all_results = []
+for i in range(2, MAX_NUM_BIDDERS+1):
+    print("Number of Bidders: " , i)
+    args = [(i, NUM_ROUNDS, strat_list)] * NUM_SIMULATIONS
+    with concurrent.futures.ProcessPoolExecutor() as executer:
+        results = executer.map(sequential_auction, args)
+    temp_list = [result for result in results]
+    all_results.append(temp_list)
+numpy.savetxt('sim_data.dat', all_results)

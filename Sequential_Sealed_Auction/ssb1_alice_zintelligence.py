@@ -40,15 +40,22 @@ class Bidder:
 
 
     def get_bid(self):
-        choice_index = self.draw()
-        bid =  strat_list[choice_index].get_bid(self.valuation)
-        return bid
+        return random.uniform(0, self.valuation)
 
     def calculate_utilities(self, winning_price, is_winner):
         utilities = []
         for i in range(len(self.strat_list)):
             bid = strat_list[i].get_bid(self.valuation)
-            utilities.append(self.valuation - bid)
+            #print("Strat: ", strat_list[i].percent, " Bid:", bid, " Winning Price", winning_price, " Valuation: ", self.valuation)
+            if bid < winning_price:
+                utilities.append(0)
+            elif bid == winning_price and not is_winner:
+                utilities.append(0)
+            elif bid == winning_price and is_winner:
+                utilities.append(self.valuation - bid)
+            else:
+                utilities.append(self.valuation - bid)
+        #print(is_winner, utilities)
         return utilities
      
 
@@ -85,30 +92,28 @@ def get_winners_index(bids, winning_price):
 
 
 # == Stratagy Initialization == 
-NUM_STRATS = 10
+NUM_STRATS = 100
 strat_list = []
 for i in range(NUM_STRATS + 1):
-    percent = i / (NUM_STRATS // 2)
+    percent = i / NUM_STRATS
     #print(percent)
     strat_list.append(strategies.Percent_V_Strategy(percent))
 
 
 # == Simulation Parameters ==
-NUM_ROUNDS = 1000
-NUM_BIDDERS = 20
+NUM_ROUNDS = 100000
+NUM_BIDDERS = 100
 
 # == Main == 
-# alice = Bidder(NUM_ROUNDS, strat_list, 1)
-# bob = Bidder(NUM_ROUNDS, strat_list, 1)
 bidders = []
-for i in range(NUM_BIDDERS):
+for i in range(NUM_BIDDERS//2):
     bidders.append(Bidder(NUM_ROUNDS, strat_list, 1))
+    bidders.append(Bidder(NUM_ROUNDS, strat_list, 2))
 
 total_social_welfare = 0
 optimal_social_welfare = 0
 
 for i in range(NUM_ROUNDS):
-    print('Entering Loop', i)
     bids = []
     valuations = []
 
@@ -136,9 +141,8 @@ for i in range(NUM_ROUNDS):
     total_social_welfare += bidders[final_winner].get_valuation()
     optimal_social_welfare += highest_valuation
     POA = total_social_welfare/optimal_social_welfare
-    print('Winner:', final_winner, "POA: ", POA) 
-bidders[0].print_probs()
-
+    if(i == 0 or i == 9 or i == 999 or i == 9999 or i == 99999):
+        print('Loop', i+1,  final_winner, "POA: ", POA) 
 
 
 
