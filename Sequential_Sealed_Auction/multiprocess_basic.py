@@ -150,9 +150,9 @@ for i in range(NUM_STRATS + 1):
     strat_list.append(strategies.Percent_V_Strategy(percent))
 
 # == Simulation Parameters ==
-NUM_ROUNDS = 100
+NUM_ROUNDS = 100000
 MAX_NUM_BIDDERS = 100
-NUM_SIMULATIONS = 10
+NUM_SIMULATIONS = 100
 
 # == Main ==
 all_results = []
