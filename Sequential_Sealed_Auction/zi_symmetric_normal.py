@@ -155,4 +155,4 @@ for i in range(2, MAX_NUM_BIDDERS+1):
         results = executer.map(sequential_auction, args)
     temp_list = [result for result in results]
     all_results.append(temp_list)
-numpy.savetxt('symmetric_normal_data.dat', all_results)
+numpy.savetxt('zi_symmetric_normal_data.dat', all_results)

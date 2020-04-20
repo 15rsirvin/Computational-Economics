@@ -1,2 +1,2 @@
-python3 symmetric_overbidders.py
-python3 zi_symmetric_overbidding.py
+python3 symmetric_normal.py
+python3 zi_symmetric_normal.py
