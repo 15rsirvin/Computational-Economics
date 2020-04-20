@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 #This data is a list of lists. Each sublist at position i is some n numner of results of POA
 #for simulating with i+2 numner of bidders
-data = np.loadtxt('symmetric_data.dat')
+data = np.loadtxt('zi_symmetric_overbidding_data.dat')
 
 # calculate min, max, avg for each # of bidders
 minimums =[min(curr) for curr in data]
