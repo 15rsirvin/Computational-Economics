@@ -118,7 +118,7 @@ def sequential_auction(args):
                 bidders[j].lost(selling_price)
 
         #Update Social Welfare and POA values
-        total_social_welfare += bidders[final_winner].get_valuation() - selling_price
+        total_social_welfare += bidders[final_winner].get_valuation()
         optimal_social_welfare += highest_valuation
         POA = total_social_welfare/optimal_social_welfare
         if(POA_AVERAGE == 0):
