@@ -54,8 +54,6 @@ class Bidder:
                 utilities.append(0)
             elif bid == winning_price and not is_winner:
                 utilities.append(0)
-            elif bid == winning_price and is_winner:
-                utilities.append(self.valuation - bid)
             else:
                 utilities.append(self.valuation - bid)
         return utilities
@@ -74,13 +72,6 @@ class Bidder:
         sum_w = sum(self.w)
         for weight in self.w:
             print(weight / sum_w)
-
-def max_list(array):
-    max = 0
-    for num in array:
-        if num > max:
-            max = num
-    return max
 
 #Takes list of bidders and the winning price
 #Returns list of indecies of winning bidder(s) (helps with ties)
@@ -113,12 +104,12 @@ def sequential_auction(args):
             valuations.append(bidder.get_valuation())
 
         #Determine what bid won
-        selling_price = max_list(bids)
+        selling_price = max(bids)
         winning_bidders = get_winners_index(bids, selling_price)
         final_winner = random.choice(winning_bidders)
 
         #Determine what valuation should have won
-        highest_valuation = max_list(valuations)
+        highest_valuation = max(valuations)
 
         #Update Agents on Outcome
         for j in range(len(bidders)):
