@@ -151,4 +151,4 @@ for i in range(2, MAX_NUM_BIDDERS+1):
         results = executer.map(sequential_auction, args)
     temp_list = [result for result in results]
     all_results.append(temp_list)
-numpy.savetxt('symmetric_data.dat', all_results)
+numpy.savetxt('symmetric_overbidding_data.dat', all_results)
