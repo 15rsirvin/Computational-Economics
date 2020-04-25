@@ -133,7 +133,8 @@ def sequential_auction(args):
 # == Stratagy Initialization == 
 NUM_STRATS = 100
 strat_list = []
-for i in range(2*NUM_STRATS + 1):
+max_bid_multiplier = int(numpy.random.uniform(1, 100))
+for i in range(max_bid_multiplier*NUM_STRATS + 1):
     percent = i / NUM_STRATS
     strat_list.append(strategies.Percent_V_Strategy(percent))
 
@@ -151,4 +152,4 @@ for i in range(2, MAX_NUM_BIDDERS+1):
         results = executer.map(sequential_auction, args)
     temp_list = [result for result in results]
     all_results.append(temp_list)
-numpy.savetxt('symmetric_overbidding_data.dat', all_results)
+numpy.savetxt('symmetric_random_overbidding_data.dat', all_results)
