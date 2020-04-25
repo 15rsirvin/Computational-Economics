@@ -50,14 +50,12 @@ class Bidder:
         utilities = []
         for i in range(len(self.strat_list)):
             bid = strat_list[i].get_bid(self.valuation)
-            #print("Strat: ", strat_list[i].percent, " Bid:", bid, " Winning Price", winning_price, " Valuation: ", self.valuation)
             if bid < winning_price:
                 utilities.append(0)
             elif bid == winning_price and not is_winner:
                 utilities.append(0)
             else:
                 utilities.append(self.valuation - bid)
-        #print(is_winner, utilities)
         return utilities
      
     def won(self, winning_price):
@@ -88,8 +86,8 @@ def sequential_auction(args):
     NUM_BIDDERS = args[0]
     NUM_ROUNDS = args[1]
     strat_list = args[2]
-    # alice = Bidder(NUM_ROUNDS, strat_list, 1)
-    # bob = Bidder(NUM_ROUNDS, strat_list, 1)
+
+    #Create Bidders
     bidders = []
     for i in range(NUM_BIDDERS):
         bidders.append(Bidder(NUM_ROUNDS, strat_list, 1))
