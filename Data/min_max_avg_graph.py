@@ -12,9 +12,9 @@ maximums =[max(curr) for curr in data]
 averages = [statistics.mean(curr) for curr in data]
 x_axis = [i+2 for i in range(len(maximums))]
 
-plt.plot(x_axis, minimums, label = "Minimums")
+plt.plot(x_axis, minimums, label = "Minima")
 plt.plot(x_axis, averages, label = "Averages")
-plt.plot(x_axis, maximums, label = "Maximums")
+plt.plot(x_axis, maximums, label = "Maxima")
 
 plt.xlabel('Number of Bidders')
 plt.ylabel('Price of Anarchy')
